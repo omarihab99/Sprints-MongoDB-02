@@ -1,61 +1,5 @@
 const joi = require("joi");
-// const productValidation = (req, res, next) => {
-//   try {
-//     const productSchema = zod.object({
-//       id: zod.number(),
-//       name: zod.string().min(3),
-//       price: zod.number(),
-//       category_id: zod.number(),
-//     });
-//     req.body = productSchema.parse(req.body);
-//     next();
-//   } catch (error) {
-//     res.status(400).json(error.message);
-//   }
-// };
-// const putProductValidation = (req, res, next) => {
-//   try {
-//     const productSchema = zod.object({
-//       name: zod.string().min(3),
-//       price: zod.number(),
-//       category_id: zod.number(),
-//     });
-//     req.body = productSchema.parse(req.body);
-//     next();
-//   } catch (error) {
-//     res.status(400).json(error.message);
-//   }
-// };
-// const categoryValidation = (req, res, next) => {
-//   const categoryLogger = logger.categoryLogger;
-//   try {
-//     const categorySchema = zod.object({
-//       id: zod.number(),
-//       name: zod.string().min(3),
-//     });
-//     req.body = categorySchema.parse(req.body);
-//     categoryLogger.categoryValidationSuccess();
-//     next();
-//   } catch (error) {
-//     categoryLogger.categoryValidationFailed();
-//     res.status(400).json(error.message);
-//   }
-// };
-// const putCategoryValidation = (req, res, next) => {
-//   const categoryLogger = logger.categoryLogger;
-//   try {
-//     const categorySchema = zod.object({
-//       name: zod.string().min(3),
-//     });
-//     req.body = categorySchema.parse(req.body);
-//     categoryLogger.categoryValidationSuccess();
-//     next();
-//   } catch (error) {
-//     categoryLogger.categoryValidationFailed();
-//     res.status(400).json(error.message);
-//   }
-// };
-// TODO: remove above function
+
 const userLogin = (req, res, next) => {
   try {
     const userSchema = joi.object({
@@ -107,8 +51,7 @@ const userRegister = (req, res, next) => {
         .valid(joi.ref("password"))
         .messages({
           "string.empty": "Password cannot be empty",
-          "any.only":
-            "Password must contain at least 8 characters including one uppercase letter, one lowercase letter, one digit, and one special character.",
+          "any.only": "Passwords must match",
         }),
     });
     const { error } = userSchema.validate(req.body);
@@ -119,7 +62,7 @@ const userRegister = (req, res, next) => {
       const errorMessage = error.details.map((e) => e.message).join(", ");
       res.status(400).json(errorMessage);
     }
-    res.status(400).json(JSON.parse(error.message));
+    res.status(400).json(error.message);
   }
 };
 module.exports = {

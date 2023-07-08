@@ -50,9 +50,19 @@ const userRegisterService = async (userInfo) => {
 
 const userBuyProductService = async (userid, productid) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(userid))
+    if (
+      !mongoose.Types.ObjectId.isValid(userid) ||
+      !mongoose.Types.ObjectId.isValid(productid)
+    )
       return { statusCode: 400, message: "Invalid ID." };
     const user = await User.findById(userid);
+    const product = await Product.findById(productid);
+    if (!user) {
+      return { message: "User not found", statusCode: 404 };
+    }
+    if (!product) {
+      return { message: "Product not found", statusCode: 404 };
+    }
     if (user.boughtProducts.find((item) => item == productid)) {
       return { message: "Product already bought", statusCode: 400 };
     }

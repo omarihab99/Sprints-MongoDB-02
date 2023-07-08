@@ -1,7 +1,6 @@
 const express = require("express");
 const {verifyToken} = require("../services/auth");
-// const {productValidation, putProductValidation} = require("../services/validation");
-// TODO: remove above line.
+
 const {
     getAllProductsController,
     createProductController,
