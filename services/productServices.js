@@ -20,6 +20,7 @@ const createProduct = async (product) => {
 };
 const getProductById = async (id) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(id)) return { statusCode: 400, message: "Invalid ID." };
     const product = await Product.findById(id);
     return product
       ? { statusCode: 200, data: product, message: "Product found." }
@@ -41,6 +42,7 @@ const updateProduct = async (id, product) => {
 };
 const deleteProduct = async (id) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(id)) return { statusCode: 400, message: "Invalid ID." };
     const result = await Product.deleteOne({ _id: id });
     if (result.deletedCount === 1)
       return { statusCode: 200, message: "Product deleted." };

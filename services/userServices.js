@@ -2,6 +2,7 @@ const { createHash } = require("crypto");
 const dotenv = require("dotenv");
 const User = require("../models/userModel");
 const Product = require("../models/productModel");
+const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 dotenv.config();
 const hash = (password) => createHash("sha256").update(password).digest("hex");
@@ -49,12 +50,12 @@ const userRegisterService = async (userInfo) => {
 
 const userBuyProductService = async (userid, productid) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(userid))
+      return { statusCode: 400, message: "Invalid ID." };
     const user = await User.findById(userid);
-
-    if (user.boughtProducts.find(item => item == productid)) {
+    if (user.boughtProducts.find((item) => item == productid)) {
       return { message: "Product already bought", statusCode: 400 };
     }
-    
     user.boughtProducts.push(productid);
     await user.save();
     return { message: "Product bought successfully", statusCode: 200 };
@@ -64,6 +65,8 @@ const userBuyProductService = async (userid, productid) => {
 };
 const updateUserInfoService = async (userid, userInfo) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(userid))
+      return { statusCode: 400, message: "Invalid ID." };
     const user = await User.findByIdAndUpdate(userid, userInfo, {
       new: true,
     });
@@ -77,6 +80,8 @@ const updateUserInfoService = async (userid, userInfo) => {
 };
 const deleteUserInfoService = async (userid) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(userid))
+      return { statusCode: 400, message: "Invalid ID." };
     const user = await User.findByIdAndRemove(userid);
     if (!user) {
       return { message: "User not found", statusCode: 404 };
