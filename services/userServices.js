@@ -1,8 +1,9 @@
 const {createHash} = require('crypto');
 const dotenv = require('dotenv');
-const users = require('../models/userModel');
+const User = require('../models/userModel');
 const logger = require('../logger');
 const userLogger = logger.userLogger;
+const Product = require('../models/productModel');
 const jwt = require('jsonwebtoken');
 dotenv.config();
 const hash = (password) => {return createHash("sha256").update(password).digest("hex")};
@@ -44,4 +45,11 @@ const userRegisterService = (email, password) => {
   }
   
 }
-module.exports = {userRegisterService, userLoginService};
+
+const userBuyProductService = async (userid, productid) => {
+  const product = await Product.findById(productid);
+  if(!product) return {message: 'Product out of stock', statusCode: 404};
+  // Complete this function
+  
+}
+module.exports = {userRegisterService, userLoginService, userBuyProductService};

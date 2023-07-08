@@ -1,4 +1,4 @@
-const {userRegisterService, userLoginService} = require('../services/userServices');
+const {userRegisterService, userLoginService, userBuyProductService} = require('../services/userServices');
 const userLoginController = (req, res) => {
   const { email, password } = req.body;
   const result = userLoginService(email, password);
@@ -11,9 +11,27 @@ const userLoginController = (req, res) => {
 
 };
 const userRegisterController = (req, res) => {
-  const { email, password, _ } = req.body;
+  try{
+    const { email, password, _ } = req.body;
   const result = userRegisterService(email, password);
-  res.status(result.code).json(result.message);
+  res.status(result.code).json(result.message);  
+  }
+  catch(err){
+    res.status(500).json(err.message);
+  }
+  
 };
 
-module.exports = {userRegisterController, userLoginController};
+const userBuyProductController = (req,res) => {
+  try{
+    const userId = parseInt(req.params.userid);
+  const productId = parseInt(req.params.productid);
+  const result = userBuyProductService(userId, productId);
+  res.status(result.statusCode).json(result.message);  
+  }
+  catch(err){
+    res.status(500).json(err.message);
+  }
+  
+}
+module.exports = {userRegisterController, userLoginController, userBuyProductController};
