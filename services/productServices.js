@@ -1,4 +1,5 @@
 const Product = require("../models/productModel");
+const mongoose = require("mongoose");
 const getAllProducts = async () => {
   try {
     const products = await Product.find();
@@ -29,11 +30,10 @@ const getProductById = async (id) => {
 };
 const updateProduct = async (id, product) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(id)) return { statusCode: 400, message: "Invalid ID." };
     const result = await Product.findByIdAndUpdate(id, product, { new: true });
-    if (result.matchedCount === 1 && result.modifiedCount === 1)
+    if (result)
       return { statusCode: 200, message: "Product updated." };
-    else if (result.matchedCount === 0)
-      return { statusCode: 404, message: "Product not found." };
     return { statusCode: 400, message: "Error updating product." };
   } catch (error) {
     return { statusCode: 500, message: error.message };

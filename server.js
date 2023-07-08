@@ -10,8 +10,8 @@ const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
 mongoose.connect(DB_URL).then(()=>console.log(chalk.green('Database connected'))).catch((err)=>console.log(err));
 app.use(express.json());
-app.use('/product', productRoute);
-app.use('/user', userRoute);
+app.use('/products', productRoute);
+app.use('/users', userRoute);
 app.listen(PORT, () => {
     console.log(chalk.green(`Server running on port ${PORT}`));
 });

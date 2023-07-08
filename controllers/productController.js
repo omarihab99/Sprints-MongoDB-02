@@ -6,9 +6,9 @@ const {
   updateProduct,
 } = require("../services/productServices");
 
-const getAllProducts = (req, res) => {
+const getAllProductsController = async (req, res) => {
   try {
-    const result = getAllProducts();
+    const result = await getAllProducts();
     const {statusCode, data, message} = result;
     console.log(message);
     res.status(statusCode).json(data);
@@ -16,20 +16,20 @@ const getAllProducts = (req, res) => {
     res.status(400).json(error.message);
   }
 };
-const createProduct = (req, res) => {
+const createProductController = async (req, res) => {
   try {
     const product = req.body;
-    const result = createProduct(product);
+    const result = await createProduct(product);
     const {statusCode, message} = result;
     res.status(statusCode).json(message);
   } catch (error) {
     res.status(400).json(error.message);
   }
 };
-const getProductById = (req, res) => {
+const getProductByIdController = async (req, res) => {
   try {
-    const id = Number(req.params.id);
-    const result = getProductById(id);
+    const id = req.params.id;
+    const result = await getProductById(id);
     const {statusCode, data, message} = result;
     console.log(message);
     res.status(statusCode).json(data);
@@ -37,21 +37,21 @@ const getProductById = (req, res) => {
     res.status(400).json(error.message);
   }
 };
-const updateProduct = (req, res) => {
+const updateProductController = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     const product = req.body;
-    const result = updateProduct(id, product);
+    const result = await updateProduct(id, product);
     const {statusCode, message} = result;
     res.status(statusCode).json(message);
   } catch (error) {
     res.status(400).json(error.message);
   }
 };
-const deleteProduct = (req, res) => {
+const deleteProductController = async (req, res) => {
   try {
-    const id = Number(req.params.id);
-    const result = deleteProduct(id);
+    const id = req.params.id;
+    const result = await deleteProduct(id);
     const {statusCode, message} = result;
     res.status(statusCode).json(message);
   } catch (error) {
@@ -60,9 +60,9 @@ const deleteProduct = (req, res) => {
 };
 
 module.exports = {
-  getAllProducts,
-  createProduct,
-  getProductById,
-  updateProduct,
-  deleteProduct,
+  getAllProductsController,
+  createProductController,
+  getProductByIdController,
+  updateProductController,
+  deleteProductController,
 };

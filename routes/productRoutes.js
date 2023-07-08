@@ -1,20 +1,21 @@
 const express = require("express");
 const {verifyToken} = require("../services/auth");
-const {productValidation, putProductValidation} = require("../services/validation");
+// const {productValidation, putProductValidation} = require("../services/validation");
+// TODO: remove above line.
 const {
-    getAllProducts,
-    createProduct,
-    getProductById,
-    updateProduct,
-    deleteProduct,
+    getAllProductsController,
+    createProductController,
+    getProductByIdController,
+    updateProductController,
+    deleteProductController,
 } = require("../controllers/productController");
 const router = express.Router();
-router.get("/", getAllProducts);
-router.post("/",verifyToken, productValidation, createProduct);
+router.get("/", getAllProductsController);
+router.post("/", createProductController);
 router
     .route("/:id")
-    .get(getProductById)
-    .put(verifyToken, putProductValidation, updateProduct)
-    .delete(verifyToken, deleteProduct);
+    .get(getProductByIdController)
+    .patch(updateProductController)
+    .delete(deleteProductController);
 
 module.exports = router;

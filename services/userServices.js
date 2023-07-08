@@ -1,55 +1,95 @@
-const {createHash} = require('crypto');
-const dotenv = require('dotenv');
-const User = require('../models/userModel');
-const logger = require('../logger');
-const userLogger = logger.userLogger;
-const Product = require('../models/productModel');
-const jwt = require('jsonwebtoken');
+const { createHash } = require("crypto");
+const dotenv = require("dotenv");
+const User = require("../models/userModel");
+const Product = require("../models/productModel");
+const jwt = require("jsonwebtoken");
 dotenv.config();
-const hash = (password) => {return createHash("sha256").update(password).digest("hex")};
-const userLoginService = (email, password) => {
-  const user = users.find((user) => user.email === email);
-  if(!user){
-    userLogger.userLoginFailed();
-    return {message: 'User not found', code: 404};
-  }
-  if(hash(password) !== user.password){
-    userLogger.userLoginFailed();
-    return {message: 'Password incorrect', code: 401};
-  }
-  const token = jwt.sign(user, process.env.JWT_SECRET);
-  userLogger.userLoginSuccess();
-  return {message: 'User logged in successfully', code: 200, token: token};
-}
-
-
-const userRegisterService = (email, password) => {
-  
-  try{
-    const hashedPassword = hash(password);
-    const user = users.find((user) => user.email === email);
-    if(user){
-      userLogger.userRegisterFailed();
-      return {message: 'User already exists', code: 409};
+const hash = (password) => createHash("sha256").update(password).digest("hex");
+const userLoginService = async (userInfo) => {
+  try {
+    const { email, password } = userInfo;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return { message: "User not found", statusCode: 404 };
     }
-    users.push({
+    if (hash(password) !== user.password) {
+      return { message: "Password incorrect", statusCode: 401 };
+    }
+    const token = jwt.sign(userInfo, process.env.JWT_SECRET);
+    return {
+      message: "User logged in successfully",
+      statusCode: 200,
+      token: token,
+    };
+  } catch (error) {
+    return { message: error.message, statusCode: 400 };
+  }
+};
+
+const userRegisterService = async (userInfo) => {
+  try {
+    const { name, email, password } = userInfo;
+    const hashedPassword = hash(password);
+    await User.create({
+      name,
       email,
       password: hashedPassword,
     });
-    console.log(users);
-    userLogger.userRegisterSuccess();
-    return {message:'User registered successfully', code: 201};
+    return { message: "User registered successfully", statusCode: 201 };
+  } catch (error) {
+    if (error.message == "Validation Error") {
+      return {
+        message: "User with this email already exists",
+        statusCode: 400,
+      };
+    }
+    return { message: error.message, statusCode: 400 };
   }
-  catch(error){
-    userLogger.userRegisterFailed();
-  }
-  
-}
+};
 
 const userBuyProductService = async (userid, productid) => {
-  const product = await Product.findById(productid);
-  if(!product) return {message: 'Product out of stock', statusCode: 404};
-  // Complete this function
-  
-}
-module.exports = {userRegisterService, userLoginService, userBuyProductService};
+  try {
+    const user = await User.findById(userid);
+
+    if (user.boughtProducts.find(item => item == productid)) {
+      return { message: "Product already bought", statusCode: 400 };
+    }
+    
+    user.boughtProducts.push(productid);
+    await user.save();
+    return { message: "Product bought successfully", statusCode: 200 };
+  } catch (error) {
+    return { message: error.message, statusCode: 400 };
+  }
+};
+const updateUserInfoService = async (userid, userInfo) => {
+  try {
+    const user = await User.findByIdAndUpdate(userid, userInfo, {
+      new: true,
+    });
+    if (!user) {
+      return { message: "User not found", statusCode: 404 };
+    }
+    return { message: "User updated successfully", statusCode: 200 };
+  } catch (error) {
+    return { message: error.message, statusCode: 400 };
+  }
+};
+const deleteUserInfoService = async (userid) => {
+  try {
+    const user = await User.findByIdAndRemove(userid);
+    if (!user) {
+      return { message: "User not found", statusCode: 404 };
+    }
+    return { message: "User deleted successfully", statusCode: 200 };
+  } catch (error) {
+    return { message: error.message, statusCode: 400 };
+  }
+};
+module.exports = {
+  userRegisterService,
+  userLoginService,
+  userBuyProductService,
+  updateUserInfoService,
+  deleteUserInfoService,
+};

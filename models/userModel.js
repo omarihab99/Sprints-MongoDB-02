@@ -15,7 +15,7 @@ const userSchema = new Schema({
         required: true,
     },
     boughtProducts:[
-      {type: Schema.types.ObjectId, ref: 'Product'}
+      {type: Schema.Types.ObjectId, ref: 'Product'}
     ]
 });
 const User = mongoose.model('User', userSchema);
